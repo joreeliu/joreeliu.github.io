@@ -1,0 +1,30 @@
+body{
+    
+    margin-top: 30px;
+    
+}
+#title{
+    background-color: #fce4ec;
+    font-family:helvetica;
+    font-size:34px;
+    color:#030101;
+    padding-bottom:10px;
+
+}
+#subtitle{
+    padding-bottom:10px;
+    background-color: #fce4ec;
+    font-family:helvetica;
+    font-size:15px;
+    color:#030101;
+}
+li{
+    padding-bottom:20px;
+}
+#content{
+    background-color: #eeeeee;
+    padding:12px;
+    font-family:helvetica;
+    font-size:20px;
+    color:#030101;
+}
