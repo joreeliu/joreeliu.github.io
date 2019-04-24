@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+		<link rel="stylesheet" href="style.css"> 
+		<script src= "https://d3js.org/d3.v4.min.js"></script> 
+		<script src="http://d3js.org/d3.v4.js"></script>
+
+		
+
+		<script src='https://api.mapbox.com/mapbox.js/v3.2.0/mapbox.js'></script>
+		<link href='https://api.mapbox.com/mapbox.js/v3.2.0/mapbox.css' rel='stylesheet' /> 
+		
+   		
+   		<script src="https://d3js.org/d3-collection.v1.min.js"></script> 
+   		<style>#map.legend {  padding: 6px 8px; text-align: left; line-height: 14px; color: #555;background: rgba(255,255,255,0.8); } .legend i { width: 14px; height: 10px; float: left; margin-right: 8px; opacity: 0.7; }.info { padding: 6px 8px; font: 14px/15px Arial, Helvetica, sans-serif; background: white; background: rgba(255,255,255,0.8); box-shadow: 0 0 15px rgba(0,0,0,0.2); border-radius: 5px; } .info h4 { margin: 0 0 5px; color: #000; }</style>
+
+	
+	</head>
+
+	<body>
+		 <script type="text/javascript" src="422precincts.js"></script> 
+		<div id="grid">
+
+			<div id="title">
+
+	            
+
+				<h1>New York Acting Scenes<br> Ultimate Guide
+                    </*img src="image for tittle.jpg" style="width:1450px;height:100px;">
+				</h1>
+			</div>
+			<div id="intro">How to use this guide... <br>  
+				<div id="intro_pic" >
+					<img src="intro.jpg" width="866" height="124">
+					
+				</div>
+			</div>
+			<div id='menu'>
+						<input id='total_density' type='radio' name='rtoggle' value='Total' checked='checked'>
+						<label for='Total'>Total</label>
+						<input id='TV_density' type='radio' name='rtoggle' value='Television'>
+						<label for='Television'>Television</label>
+						<input id='Theater_density' type='radio' name='rtoggle' value='Theater'>
+						<label for='Theater'>Theater</label>
+						<input id='Film_density' type='radio' name='rtoggle' value='Film'>
+						<label for='Film'>Film</label>								
+			</div>	
+			<div id="map">
+
+				         <script>
+
+
+							
+							L.mapbox.accessToken = 'pk.eyJ1Ijoiamlhbmd6ZXlpMjIyIiwiYSI6ImNqbXh1OGgwdTFiaXMzcW8yd3A3aGd5ejgifQ.VXmoFU7Cwk3QXRUD9cZp-Q';
+							
+							var map = L.map('map').setView([40.7128, -74.0060], 10);
+							L.tileLayer( 'https://api.mapbox.com/styles/v1/jiangzeyi222/cjmxuvuur6hoc2so6v6f3a6ge/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoiamlhbmd6ZXlpMjIyIiwiYSI6ImNqdW95dHFtZjF5bGk0ZG80NXJpcWd0Z3kifQ.9AQdr7aPaDC57CQZKTeaQw', {
+								maxZoom: 18,
+
+								//id: 'map'
+								
+							}).addTo(map);
+
+							var layerList = document.getElementById('menu');
+							var inputs = layerList.getElementsByTagName('input');
+
+							// add info
+							var info = L.control();
+
+							  info.onAdd = function (map) {
+							    this._div = L.DomUtil.create('div', 'info');
+							    this.update();
+							    return this._div;
+							  };
+
+							  info.update = function (props) {
+							    this._div.innerHTML = '<h4>Police Precinct: </h4>' +  (props ?
+							      '<b>' + props.precinct + '</b><br />'+'<h4>Unit:e-6/sqft</h4>'+ '</b><br />'  +'Total density: '+ Math.round(props.total_dens*100000*100)/100
+							      + '</b><br />' + 'TV permits density: '+Math.round(props.TV_dens*100000*100)/100 + '</b><br />'+'Film permits density: '+Math.round(props.Film_dens*100000*100)/100 + '</b><br />'+'Theater permits density: '+Math.round(props.Theater_de*100000*100)/100 + '</b><br />'
+							      : 'Hover over a police precinct');
+							  };
+
+							  info.addTo(map);
+
+                            //highlight 
+							function highlightFeature(e) {
+							    var layer = e.target;
+                                console.log(e.target)
+                                //console.log(layer.feature.properties)
+							    layer.setStyle({
+							      weight: 4,
+							      color:'#fff043' ,
+							      dashArray: '',
+							      fillOpacity: 0.7
+							    });
+
+							    if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+							      layer.bringToFront();
+							    }
+
+							    info.update(layer.feature.properties);
+							  }
+
+							function resetHighlight(e) {
+							    geojson.resetStyle(e.target);
+							    info.update();
+							  }
+
+							function zoomToFeature(e) {
+							    map.fitBounds(e.target.getBounds());
+							  }
+
+							function onEachFeature(feature, layer) {
+							    layer.on({
+							      mouseover: highlightFeature,
+							      mouseout: resetHighlight,
+							      click: zoomToFeature
+							    });
+							  }
+ 
+
+							//draw precincts
+							
+							
+				            function style(feature) {
+				            	function getColor(d) {
+								return  d > 16e-5 ? '#e5004d' :
+										d > 14e-5  ? '#ea0068' :
+										d > 8e-5  ? '#f3629c' :
+										d > 4e-5 ? '#f3629c' :
+										d > 1e-5 ? '#f68fb2' :
+										d > 0.7e-5 ? '#ffc3d9' :
+										d > 0.3e-5   ? '#fedfe9' :
+												  '#ffffff';	
+				                     }
+								return {
+									weight: 2,
+									opacity: 1,
+									color: 'white',
+									dashArray: '3',
+									fillOpacity: 0.9,
+									fillColor: getColor(feature.properties.total_dens)
+								};
+							}
+							geojson = L.geoJson(precinctData, {
+								style: style,
+								onEachFeature: onEachFeature
+							}).addTo(map);
+
+							//var p2 = d3.map(permitsCount)
+																	
+							 //console.log(permitsCount)
+							function switchLayer(layer) {
+                                var layerId = layer.target.id;
+                                console.log(layerId)
+                                
+                                if(layerId == "TV_density"){
+                                	map.removeLayer(geojson);
+                                    function style(feature) {
+                                    	function getColor(d) {
+										return  d > 16e-5 ? '#e5004d' :
+												d > 14e-5  ? '#ea0068' :
+												d > 8e-5  ? '#f3629c' :
+												d > 4e-5 ? '#f3629c' :
+												d > 1e-5 ? '#f68fb2' :
+												d > 0.7e-5 ? '#ffc3d9' :
+												d > 0.3e-5   ? '#fedfe9' :
+														  '#ffffff';										
+				                     }
+                                        return {
+                                            weight: 2,
+                                            opacity: 1,
+                                            color: 'white',
+                                            dashArray: '3',
+                                            fillOpacity: 0.9,
+                                            fillColor: getColor(feature.properties.TV_dens)
+                                        };
+                                    }
+                                    geojson = L.geoJson(precinctData, {
+                                    style: style,                               
+                                    }).addTo(map);
+                                }
+                                if(layerId == "Film_density"){
+                                	map.removeLayer(geojson);
+                                    function style(feature) {
+                                    	function getColor(d) {
+										return  d > 16e-5 ? '#e5004d' :
+												d > 14e-5  ? '#ea0068' :
+												d > 8e-5  ? '#f3629c' :
+												d > 4e-5 ? '#f3629c' :
+												d > 1e-5 ? '#f68fb2' :
+												d > 0.7e-5 ? '#ffc3d9' :
+												d > 0.3e-5   ? '#fedfe9' :
+														  '#ffffff';		
+				                     }
+                                        return {
+                                            weight: 2,
+                                            opacity: 1,
+                                            color: 'white',
+                                            dashArray: '3',
+                                            fillOpacity: 0.9,
+                                            fillColor: getColor(feature.properties.Film_dens)
+                                        };
+                                    }
+                                    geojson = L.geoJson(precinctData, {
+                                    style: style, 
+                                    onEachFeature: onEachFeature                              
+                                    }).addTo(map);
+                                }
+
+                                if(layerId == "Theater_density"){
+                                	map.removeLayer(geojson);
+                                    function style(feature) {
+                                    	function getColor(d) {
+										return  d > 16e-5 ? '#e5004d' :
+												d > 14e-5  ? '#ea0068' :
+												d > 8e-5  ? '#f3629c' :
+												d > 4e-5 ? '#f3629c' :
+												d > 1e-5 ? '#f68fb2' :
+												d > 0.7e-5 ? '#ffc3d9' :
+												d > 0.3e-5   ? '#fedfe9' :
+														  '#ffffff';	
+				                     }
+                                        return {
+                                            weight: 2,
+                                            opacity: 1,
+                                            color: 'white',
+                                            dashArray: '3',
+                                            fillOpacity: 0.9,
+                                            fillColor: getColor(feature.properties.Theater_de)
+                                        };
+                                    }
+                                    geojson = L.geoJson(precinctData, {
+                                    style: style,   
+                                    onEachFeature: onEachFeature                            
+                                    }).addTo(map);
+                                }
+                                if(layerId == "total_density"){
+                                	map.removeLayer(geojson);
+                                    function style(feature) {
+                                    	function getColor(d) {
+										return  d > 16e-5 ? '#e5004d' :
+												d > 14e-5  ? '#ea0068' :
+												d > 8e-5  ? '#f3629c' :
+												d > 4e-5 ? '#f3629c' :
+												d > 1e-5 ? '#f68fb2' :
+												d > 0.7e-5 ? '#ffc3d9' :
+												d > 0.3e-5   ? '#fedfe9' :
+														  '#ffffff';	
+				                     }
+                                        return {
+                                            weight: 2,
+                                            opacity: 1,
+                                            color: 'white',
+                                            dashArray: '3',
+                                            fillOpacity: 0.9,
+                                            fillColor: getColor(feature.properties.total_dens)
+                                        };
+                                    }
+                                    geojson = L.geoJson(precinctData, {
+                                    style: style, 
+                                    onEachFeature: onEachFeature                              
+                                    }).addTo(map);
+                                }
+                                
+                                
+                            }
+
+                            for (var i = 0; i < inputs.length; i++) {
+                            inputs[i].onclick = switchLayer;
+                            
+                            //console.log(layerId)
+                            }
+
+                            // add legend
+                            function getColor(d) {
+								return  d > 16e-5 ? '#e5004d' :
+										d > 14e-5  ? '#ea0068' :
+										d > 8e-5  ? '#f3629c' :
+										d > 4e-5 ? '#f3629c' :
+										d > 1e-5 ? '#f68fb2' :
+										d > 0.7e-5 ? '#ffc3d9' :
+										d > 0.3e-5   ? '#fedfe9' :
+												  '#ffffff';	
+				                     }		
+
+                            var legend = L.control({position: 'bottomright'});
+                            legend.onAdd = function (map) {
+
+								var div = L.DomUtil.create('div', 'info legend'),
+									grades = [0, 0.3e-5, 0.7e-5, 1e-5, 4e-5, 8e-5, 14e-5,16e-5],
+									labels = ['Legend(/sqft)'],
+									from, to;
+
+								for (var i = 0; i < grades.length; i++) {
+									from = grades[i];
+									to = grades[i + 1];
+
+									labels.push(
+										'<i style="background:' + getColor(from) + '"></i> ' +
+										from + (to ? '&ndash;' + to : '+'));
+								}
+								div.innerHTML = labels.join('<br>');
+									return div;
+								};
+								legend.addTo(map);
+
+							
+
+
+													
+
+				     </script> 
+			</div>
+			<div id="upperright">
+			
+                <div id="up_grid">
+                	<div id="up_title">
+                		Interesting facts you should know...       
+                	</div>
+                	<div id="content">
+                	</div>
+
+                </div>
+
+			<script>
+				var img = document.createElement("img");
+				img.setAttribute("height", "290");
+				img.setAttribute("width", "570");
+ 
+				img.src = "precinct 14.jpg";
+				var src = document.getElementById("content");
+											 
+				src.appendChild(img);
+					  
+
+
+
+				</script> 
+
+			</div>
+			<div id="lowerright">
+				<button onclick="update('total_dens')" >Total Permits Density</button>
+				<button onclick="update('TV_dens')">TV Permits Density</button>
+				<button onclick="update('Film_dens')">Film Permits Density</button>
+				<button onclick="update('Theater_de')">Theater Permits Density</button>
+
+
+
+				 <script>
+				 	var remove = document.getElementById("content");
+					    remove.removeChild(remove.childNodes[0]);
+
+
+					  var margin = {top: 30, right: 30, bottom: 70, left: 60},
+			              width = 550 - margin.left - margin.right,
+			              height = 300 - margin.top - margin.bottom;
+			          var svg = d3.select("#lowerright")
+			            .append("svg")
+			              .attr("width", width + margin.left + margin.right)
+			              .attr("height", height + margin.top + margin.bottom)
+			            .append("g")
+			              .attr("transform",
+			                    "translate(" + margin.left + "," + margin.top + ")");
+
+                       
+
+			          var x = d3.scaleBand()
+			          	.range([ 0, width ])
+			            .padding(0.4);
+			          var xAxis = svg.append("g")
+			            .attr("transform", "translate(0," + height + ")")	
+			             			
+
+			          var y = d3.scaleLinear()
+			            .range([ height, 0]);
+			          var yAxis = svg.append("g")
+			            .attr("class", "myYaxis")
+			           // y.domain([0, d3.max(data, function(d) { return +d[selectedVar] }) ])
+
+			           // A function that create / update the plot for a given variable:
+			         // A function that create / update the plot for a given variable:
+					function update(selectedVar) {
+						
+
+
+					  // Parse the Data
+					  d3.csv("422counts.csv.txt", function(data) {
+					      data.sort(function(a, b) {
+					    return d3.descending(parseFloat(a[selectedVar]), parseFloat(b[selectedVar]))
+					  })
+					      
+					      //console.log(data.slice(0,10))
+
+
+					    // X axis
+					    x.domain(data.slice(0,10).map(function(d) { return d.Index; }))
+					    xAxis.transition().duration(1000).call(d3.axisBottom(x))
+
+					    // Add Y axis
+					    y.domain([0, d3.max(data, function(d) { return +d[selectedVar] }) ]);
+					    yAxis.transition().duration(1000).call(d3.axisLeft(y));
+
+					    // variable u: map data to existing bars
+					    var u = svg.selectAll("rect")
+					      .data(data.slice(0,10))
+
+					    // update bars
+					    u
+					      .enter()
+
+					      .append("rect")
+					      .merge(u)
+					            .on("mouseover",function(d){
+					            	Index = d.Index
+                                    for(var p in map["_layers"]){
+                                        if(map["_layers"][p]["feature"]!=undefined){
+                                            var mapP = map["_layers"][p]["feature"]["properties"]["precinct"]
+                                            var mapLayerId = map["_layers"][p]["feature"]["properties"]["id"]
+                                            var barP = d.Index
+                                            if(barP ==mapP){
+                                                map["_layers"][p].setStyle({
+                                                    fillColor:"yellow"
+                                                })
+                                            }
+                                        }
+                                        
+                                    }
+                                    
+
+					            	if (Index == "5"){
+					            		var img = document.createElement("img");
+										img.setAttribute("height", "290");
+										img.setAttribute("width", "570");
+						 
+										img.src = "precinct 5.jpg";
+										var src = document.getElementById("content");
+																	 
+										src.appendChild(img);
+
+					            		var remove = document.getElementById("content");
+					            		remove.removeChild(remove.childNodes[0]);
+					            		
+
+					            		
+
+					            	}
+					            	if(Index == "14"){
+					            		var remove = document.getElementById("content");
+					            		remove.removeChild(remove.childNodes[0]);
+					            		var img = document.createElement("img");
+					            		img.setAttribute("height", "290");
+										img.setAttribute("width", "570");
+ 
+											img.src = "precinct 14.jpg";
+											var src = document.getElementById("content");
+											 
+											src.appendChild(img);
+					            		
+
+
+
+					            		/*d3.select("#upperright")
+					            		  .text("108 precinct")
+					            		  .append("img")
+					            		  .attr("src","image for tittle.jpg")
+					            		  .attr("x", "60")
+									      .attr("y", "60")
+									      .attr("width", "600")
+									      .attr("height", "300");*/
+					            	}
+
+					            	if(Index == "18"){
+					            		var remove = document.getElementById("content");
+					            		remove.removeChild(remove.childNodes[0]);
+					            		var img = document.createElement("img");
+					            		img.setAttribute("height", "290");
+										img.setAttribute("width", "570");
+ 
+											img.src = "precinct 18.jpg";
+											var src = document.getElementById("content");
+											 
+											src.appendChild(img);
+					            		//fill in the content for precinct 18
+					            		
+
+                                       /* var svg3 = d3.select("#upperright")
+			            
+								            .append("svg")
+								              .attr("id","svg3")
+								              .attr("width", 500)
+								              .attr("height", 150) 
+					      			    var svg2 = d3.select("#upperright")
+	                    
+							            .append("svg")
+							              .attr("id","svg2")
+							              .attr("width", 500)
+							              .attr("height", 150)
+                                      svg2.append("img")	
+					            		  .attr("src","image for tittle.jpg")
+									      .attr("x", "60")
+									      .attr("y", "60")
+									      .attr("width", "30")
+									      .attr("height", "30");
+
+									  svg3.append("text")	
+					            		  .attr("x", 30)
+									      .attr("y", 40)
+									      .attr("dy", ".35em")
+									      .text("3ahahahaha"+"sdfsdf");	*/
+
+                                        
+
+					            		/*d3.select("#upperright")
+					            		  .text("18 precinct")
+					            		  .append("img")
+					            		  .attr("src","time square.jpg")
+					            		  .attr("x", "60")
+									      .attr("y", "60")
+									      .attr("width", "200")
+									      .attr("height", "80");*/
+
+
+
+
+					            	}
+					           
+					            	
+					            	
+
+					            	var xPos = +d3.select(this).attr("x")
+        							var wid = +d3.select(this).attr("width");
+					              d3.select(this)
+					                .attr("fill","yellow")
+					                .attr("x", xPos - 5)
+					                .attr("width", wid + 5);
+					               
+					            })        
+					            .on("mouseout",function(d){
+
+					              d3.select(this)
+					              .attr("fill","#e50053")
+					              .attr("x", function(d) { return x(d.Index); })
+					              
+					              .attr("width", x.bandwidth());
+					              resetHighlight;
+
+
+                                  
+                                  for(var p in map["_layers"]){
+                                        if(map["_layers"][p]["feature"]!=undefined){
+                                            var mapP = map["_layers"][p]["feature"]["properties"]["precinct"]
+                                            var mapLayerId = map["_layers"][p]["feature"]["properties"]["id"]
+                                            var barP = d.Index
+                                            if(barP ==mapP){
+                                            	geojson.resetStyle(map["_layers"][p])
+                                                
+                                            }
+                                        }
+                                        
+                                    }
+                                  
+
+
+					            })
+					     
+					      .transition()
+					      .duration(1000)
+					        .attr("x", function(d) { return x(d.Index); })
+					        .attr("y", function(d) { return y(d[selectedVar]); })
+					        .attr("width", x.bandwidth())
+					        .attr("height", function(d) { return height - y(d[selectedVar]); })
+					        .attr("fill", "#e50053")
+					  })
+
+					}
+
+					// Initialize plot
+					update('PolicePrecinct')
+
+
+
+
+				</script> -->
+
+			</div>
+			<div id="footer">Footer</div>
+		</div>
+	</body>
+</html>
