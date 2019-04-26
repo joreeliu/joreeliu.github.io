@@ -14,7 +14,12 @@
 		
    		
    		<script src="https://d3js.org/d3-collection.v1.min.js"></script> 
-   		<style>#map.legend {  padding: 6px 8px; text-align: left; line-height: 14px; color: #555;background: rgba(255,255,255,0.8); } .legend i { width: 14px; height: 10px; float: left; margin-right: 8px; opacity: 0.7; }.info { padding: 6px 8px; font: 14px/15px Arial, Helvetica, sans-serif; background: white; background: rgba(255,255,255,0.8); box-shadow: 0 0 15px rgba(0,0,0,0.2); border-radius: 5px; } .info h4 { margin: 0 0 5px; color: #000; }</style>
+   		<style>#map.legend {  padding: 6px 8px; text-align: left; line-height: 14px; color: #555;background: rgba(255,255,255,0.8); } .legend i { width: 14px; height: 10px; float: left; margin-right: 8px; opacity: 0.7; }.info { padding: 6px 8px; font: 14px/15px Arial, Helvetica, sans-serif; background: white; background: rgba(255,255,255,0.8); box-shadow: 0 0 15px rgba(0,0,0,0.2); border-radius: 5px; } .info h4 { margin: 0 0 5px; color: #000; }.button{font-family: "Helvetica"}</style>
+   		<style>
+			    .button {
+			        font-family: "Helvetica";
+			    }
+		</style>
 
 	
 	</head>
@@ -338,9 +343,10 @@
 
 
 
-				</script> 
+			</script> 
 
 			</div>
+
 			<div id="lowerright">
 				<button onclick="update('total_dens')" >Total Permits Density</button>
 				<button onclick="update('TV_dens')">TV Permits Density</button>
@@ -371,13 +377,30 @@
 			          	.range([ 0, width ])
 			            .padding(0.4);
 			          var xAxis = svg.append("g")
-			            .attr("transform", "translate(0," + height + ")")	
+			            .attr("transform", "translate(0," + height + ")")
+
 			             			
 
 			          var y = d3.scaleLinear()
 			            .range([ height, 0]);
 			          var yAxis = svg.append("g")
 			            .attr("class", "myYaxis")
+
+			          svg.append("text")
+					    .attr("class", "x label")
+					    .attr("text-anchor", "end")
+					    .attr("x", width)
+					    .attr("y", height + 40)
+					    .attr("font-size",10)
+					    .text("Precinct ID");
+					  svg.append("text")
+					    .attr("class", "y label")
+					    .attr("text-anchor", "end")
+					    .attr("y", -60)
+					    .attr("dy", ".75em")
+					    .attr("font-size",10)
+					    .attr("transform", "rotate(-90)")
+					    .text("Density (Permit Counts/sqft)");
 			           // y.domain([0, d3.max(data, function(d) { return +d[selectedVar] }) ])
 
 			           // A function that create / update the plot for a given variable:
@@ -583,10 +606,10 @@
 
 
 
-				</script> -->
+				</script> 
 
 			</div>
-			<div id="footer">Footer</div>
+			<div id="footer">Data Source: New York Open Data</div>
 		</div>
 	</body>
 </html>

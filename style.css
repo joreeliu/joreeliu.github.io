@@ -9,6 +9,7 @@
 	grid-template-columns: 20px 60% 1fr 20px;
 	grid-template-rows: 120px 150px 20px 150px 300px 30px;
 	grid-gap: 10px;
+	
 	grid-template-areas: 
 	". title title ."
 	". intro upperright ."
@@ -29,6 +30,7 @@
 	background-color: white;
 }
 #title{
+	font-family: "helvetica";
 	/*padding:20px;*/
 	grid-area:title;
 	background-image: url("title image.jpg");
@@ -48,23 +50,26 @@
 #intro{
 	grid-area:intro;
 
-	
+	font-family: "helvetica";
 
     text-transform: uppercase;
 	/*background-color: pink;*/
 
 }
 #map{
+	font-family: "helvetica";
 	grid-area:map;
 	
 }
 #upperright{
+	font-family: "helvetica";
 	grid-area:upperright;
 	color: #ff2f76;
 	/*background-color: #961141;*/
 
 }
 #lowerright{
+	font-family: "helvetica";
 	grid-area:lowerright;
 	background-color: white;
 	
@@ -72,7 +77,11 @@
 #footer{
 	grid-area:footer;
 	background-color: #e50053;
-}
+	font-family:"helvetica";
+	font-size:small;
+	font-style:oblique;
+	color:black;
+	}
 #up_grid{
 	display: grid;
 	grid-template-columns: 100%;
